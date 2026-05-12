@@ -373,7 +373,7 @@ Create `.env.example` (no real values):
 DATABASE_URL=postgresql://...
 
 # NextAuth v5
-AUTH_SECRET=
+BETTER_AUTH_SECRET=
 AUTH_URL=http://localhost:3000
 
 # Admin user (single user — store hash, not plain password)
