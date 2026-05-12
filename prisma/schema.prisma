@@ -1,0 +1,128 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Project {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  tagline     String
+  description String          @db.Text
+  caseStudy   String          @db.Text
+  liveUrl     String?
+  githubUrl   String?
+  status      ProjectStatus   @default(LIVE)
+  category    ProjectCategory
+  featured    Boolean         @default(false)
+  published   Boolean         @default(true)
+  order       Int             @default(0)
+  images      ProjectImage[]
+  stack       StackItem[]
+  highlights  Highlight[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model ProjectImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String  @default("")
+  order     Int     @default(0)
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model StackItem {
+  id        String        @id @default(cuid())
+  name      String
+  category  StackCategory
+  projectId String
+  project   Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Highlight {
+  id        String  @id @default(cuid())
+  text      String  @db.Text
+  order     Int     @default(0)
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model SkillCategory {
+  id          String  @id @default(cuid())
+  title       String
+  icon        String // Lucide icon name
+  description String
+  order       Int     @default(0)
+  skills      Skill[]
+}
+
+model Skill {
+  id         String        @id @default(cuid())
+  name       String
+  level      SkillLevel
+  order      Int           @default(0)
+  categoryId String
+  category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id       String   @id @default(cuid())
+  role     String
+  company  String
+  location String
+  period   String
+  current  Boolean  @default(false)
+  order    Int      @default(0)
+  bullets  Bullet[]
+  tags     Tag[]
+}
+
+model Bullet {
+  id           String     @id @default(cuid())
+  text         String     @db.Text
+  order        Int        @default(0)
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id           String     @id @default(cuid())
+  name         String
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+}
+
+enum ProjectStatus {
+  LIVE
+  IN_DEVELOPMENT
+  PRIVATE
+}
+
+enum ProjectCategory {
+  SAAS
+  MARKETPLACE
+  ECOMMERCE
+  MANAGEMENT
+  DEVOPS
+}
+
+enum StackCategory {
+  FRONTEND
+  BACKEND
+  DEVOPS
+  DATABASE
+  INFRA
+}
+
+enum SkillLevel {
+  EXPERT
+  PROFICIENT
+  FAMILIAR
+}

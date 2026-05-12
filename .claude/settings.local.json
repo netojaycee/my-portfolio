@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm dev *)",
+      "Bash(Start-Sleep -Seconds 12)",
+      "Bash(Get-Content \"C:\\\\Users\\\\EDEHJA~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Edeh-JayCee-Desktop-projects-john-portfolio\\\\877761dd-1cb9-4230-8ce0-96c0590bd88c\\\\tasks\\\\b54ccj7iw.output\" -ErrorAction SilentlyContinue)"
+    ]
+  }
+}
