@@ -30,7 +30,7 @@ export default async function AdminExperiencePage() {
       </div>
 
       <div className="space-y-6">
-        {experiences.map((exp) => (
+        {experiences.map((exp: any) => (
           <div key={exp.id} className="p-8 rounded-2xl bg-surface border border-border group hover:border-accent/30 transition-all">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-start gap-4">
@@ -46,7 +46,7 @@ export default async function AdminExperiencePage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <Link
                   href={`/admin/experience/${exp.id}`}
@@ -64,9 +64,9 @@ export default async function AdminExperiencePage() {
                 </form>
               </div>
             </div>
-            
+
             <div className="mt-6 flex flex-wrap gap-2">
-              {exp.tags.map(tag => (
+              {exp.tags.map((tag: any) => (
                 <span key={tag.id} className="px-2 py-0.5 rounded bg-surface-2 border border-border text-[10px] font-mono text-dim uppercase tracking-wider">
                   {tag.name}
                 </span>

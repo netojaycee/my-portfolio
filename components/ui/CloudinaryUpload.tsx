@@ -31,7 +31,6 @@ export function CloudinaryUpload({ onSuccess, value, className }: CloudinaryUplo
           apiKey,
           uploadSignature: signature,
           timestamp,
-          uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
           cropping: true,
           multiple: false,
           clientAllowedFormats: ["webp", "png", "jpg", "jpeg"],

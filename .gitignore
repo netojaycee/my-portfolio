@@ -41,8 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 
-AGENTS.md
-ARCHITECTURE.md
-CLAUDE.md
-current_status.md
-note.txt
+docs/
