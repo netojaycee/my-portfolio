@@ -197,7 +197,7 @@ export function Hero() {
               >
                 {[
                   { val: "5+", label: "Years" },
-                  { val: "6+", label: "Projects" },
+                  { val: "7+", label: "Projects" },
                   { val: "99.9%", label: "Uptime" },
                 ].map((s) => (
                   <div key={s.label} className="text-center lg:text-left">

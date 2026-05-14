@@ -5,7 +5,7 @@ import { SectionHeader } from "../ui/SectionHeader";
 import { Code2, Server, Globe, ShieldCheck } from "lucide-react";
 
 const stats = [
-  { label: "Production Apps", value: "6+", icon: Globe },
+  { label: "Production Apps", value: "7+", icon: Globe },
   { label: "Infrastructure Fleet", value: "10+", icon: Server },
   { label: "Years Experience", value: "5+", icon: Code2 },
   { label: "System Uptime", value: "99.9%", icon: ShieldCheck },
