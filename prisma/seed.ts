@@ -377,6 +377,77 @@ Four distinct roles with different permissions and interfaces: school administra
     },
   });
 
+  // 7. Maville Diagnostics Suite
+  const mavilleDiagnostics = await prisma.project.create({
+    data: {
+      slug: "maville-diagnostics",
+      name: "Maville Diagnostics Suite",
+      tagline: "Portable Windows Desktop App for Laptop Inspection & Grading",
+      order: 7,
+      featured: false,
+      status: "LIVE",
+      category: "DESKTOP",
+      liveUrl: "#",
+      // liveUrl: "https://github.com/netojaycee/maville-diagnostics", // update to your actual repo URL
+      description: "A standalone Windows desktop application for laptop sellers, refurbishers, and technicians. Automatically retrieves full hardware specifications via WMI and PowerShell, runs interactive functionality tests across keyboard, webcam, mic, display, USB, and storage, scores the laptop using a weighted grading model, and generates professional PDF, HTML, or plain text inspection reports — all bundled into a single portable .exe with no Python installation required.",
+      caseStudy: `## The Problem
+
+Laptop refurbishers and used-device sellers in the UK and Nigerian markets have no standardised inspection workflow. Hardware checks happen ad hoc — some technicians open Device Manager, others run third-party tools, most rely on memory. There is no consistent grading output, no audit trail, and no professional report to hand a buyer.
+
+## The Solution
+
+Maville Diagnostics Suite is a portable Windows desktop application that turns an unstructured inspection process into a repeatable, documented workflow. A technician double-clicks a single .exe, the application pulls full hardware specs automatically, walks them through interactive component tests, computes a weighted condition grade, and produces a signed PDF report — in under ten minutes, with no command-line usage and no internet connection required.
+
+## Architecture
+
+The application is built entirely in Python using PyQt6 for the UI layer, with WMI and PowerShell as the data sources for hardware interrogation. This choice was deliberate: WMI is available on every Windows 10/11 machine without additional installation, and PowerShell provides access to battery chemistry data (via powercfg /batteryreport) and SMART disk health that WMI alone does not expose cleanly.
+
+All hardware queries run on QThread workers with signal/slot communication back to the main thread. The UI never blocks — progress indicators update in real time as each subsystem is probed, and any failed query returns "N/A" gracefully rather than crashing the application.
+
+## Hardware Coverage
+
+The system info layer collects laptop model, manufacturer, serial number, BIOS version, Windows version, CPU name and generation, core/thread count, RAM size and type (DDR3/DDR4/DDR5), RAM slot usage, storage type (SSD/HDD/NVMe) and capacity, GPU name, screen resolution, Wi-Fi adapter and MAC address, Bluetooth presence, and full battery chemistry — design capacity, full charge capacity, wear level percentage, cycle count, and charge status.
+
+## Functional Test Suite
+
+Ten interactive tests cover the components most likely to fail on a used machine: keyboard (visual QWERTY layout with key-press highlighting to catch dead keys), webcam (live OpenCV preview), microphone (sounddevice RMS level analysis), speaker (winsound tone playback with user confirmation), display (fullscreen colour cycling for dead pixel inspection), USB ports (device insertion detection via psutil), battery health, SMART storage status, thermal monitoring, and Wi-Fi/Bluetooth adapter presence.
+
+## Grading Engine
+
+A weighted scoring model starts at 100 and deducts points based on component condition: battery wear above 30%, 50%, and 80% trigger escalating deductions; a predicted SMART failure deducts 40 points; CPU temperature above 90°C deducts 15; each failed functional test deducts 10. The final score maps to four tiers — Grade A (Excellent, 90–100), Grade B (Good with minor wear, 75–89), Grade C (Functional but degraded, 60–74), and Reject (below 60, not suitable for sale).
+
+## Report Generation
+
+Reports are generated using ReportLab for PDF and plain Python string formatting for HTML and text. Every report carries a configurable business name, technician name, timestamp, full spec table, all test results with pass/fail status, the battery and SMART summaries, and the final grade with recommendation. Files are saved automatically to the user's Desktop with a datetime-stamped filename.
+
+## Distribution
+
+PyInstaller bundles the entire application — Python runtime, all dependencies, and assets — into a single .exe via a build.bat script. The output requires no Python installation on the target machine. It runs from a USB drive, fits in an email attachment workflow, and starts in under three seconds on a typical refurbishment-grade machine.`,
+      stack: {
+        create: [
+          { name: "Python", category: "BACKEND" },
+          { name: "PyQt6", category: "FRONTEND" },
+          { name: "WMI", category: "BACKEND" },
+          { name: "PowerShell", category: "BACKEND" },
+          { name: "OpenCV", category: "BACKEND" },
+          { name: "sounddevice", category: "BACKEND" },
+          { name: "ReportLab", category: "INFRA" },
+          { name: "psutil", category: "BACKEND" },
+          { name: "PyInstaller", category: "DEVOPS" },
+        ],
+      },
+      highlights: {
+        create: [
+          { text: "All hardware queries run on QThread workers — the UI never blocks during WMI/PowerShell interrogation; failed queries return N/A gracefully with no crashes", order: 1 },
+          { text: "Weighted grading engine scores 0–100 across battery wear, SMART status, thermal readings, RAM, storage capacity, and functional test results — maps to Grade A/B/C/Reject tiers with a sale recommendation", order: 2 },
+          { text: "Ten interactive functional tests: keyboard dead-key detection, live webcam preview via OpenCV, microphone RMS analysis, speaker tone playback, fullscreen colour cycling for dead pixel inspection, and USB device insertion detection", order: 3 },
+          { text: "Battery chemistry via powercfg /batteryreport XML parsing — captures design capacity, full charge capacity, computed wear level percentage, and cycle count beyond what WMI alone exposes", order: 4 },
+          { text: "Single portable .exe built with PyInstaller — bundles Python runtime and all dependencies, runs from USB, no installation required on the target machine", order: 5 },
+        ],
+      },
+    },
+  });
+
   console.log("Seeding skills...");
 
   const skillCategories = [

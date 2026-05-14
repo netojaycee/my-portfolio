@@ -111,6 +111,7 @@ enum ProjectCategory {
   ECOMMERCE
   MANAGEMENT
   DEVOPS
+  DESKTOP
 }
 
 enum StackCategory {
