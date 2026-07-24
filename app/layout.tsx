@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import { Syne, Lora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+} from "@/lib/seo";
 
 const syne = Syne({
   variable: "--font-syne",
@@ -23,8 +31,69 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "John Edeh | Full-Stack & DevOps Engineer",
-  description: "Portfolio of John Chinonso Edeh, a Full-Stack and DevOps Engineer based in Lagos, Nigeria. Building platforms and the infrastructure they run on.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: SITE_KEYWORDS,
+  authors: [{ name: "John Chinonso Edeh", url: SITE_URL }],
+  creator: "John Chinonso Edeh",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+    images: [
+      {
+        url: "/me.jpeg",
+        width: 800,
+        height: 800,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/me.jpeg"],
+  },
+};
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "John Chinonso Edeh",
+  alternateName: "John Edeh",
+  url: SITE_URL,
+  image: `${SITE_URL}/me.jpeg`,
+  jobTitle: "Full-Stack & DevOps Engineer",
+  description: SITE_DESCRIPTION,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Lagos",
+    addressCountry: "NG",
+  },
+  sameAs: [
+    "https://github.com/netojaycee",
+    "https://linkedin.com/in/jc-edeh",
+  ],
 };
 
 export default function RootLayout({
@@ -39,6 +108,10 @@ export default function RootLayout({
       className={`${syne.variable} ${lora.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-lora">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -47,10 +120,8 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
-        {/* <Script
-          src="https://upload-widget.cloudinary.com/global/all.js"
-          strategy="afterInteractive"
-        /> */}
+        <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );
