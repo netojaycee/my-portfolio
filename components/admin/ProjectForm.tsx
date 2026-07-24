@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useActionState } from "react";
-import { createProject, updateProject } from "@/actions/project.actions";
+import { createProject, updateProject } from "@/app/actions/project.actions";
 import { Trash2, Save, Loader2 } from "lucide-react";
 
 

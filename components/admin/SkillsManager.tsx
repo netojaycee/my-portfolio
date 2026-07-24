@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createCategory, updateCategory, deleteCategory, createSkill, updateSkill, deleteSkill } from "@/actions/skill.actions";
+import { createCategory, updateCategory, deleteCategory, createSkill, updateSkill, deleteSkill } from "@/app/actions/skill.actions";
 import { Plus, Edit2, Trash2, ChevronDown, ChevronUp, Save, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as Icons from "lucide-react";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { createExperience, updateExperience } from "@/actions/experience.actions";
+import { createExperience, updateExperience } from "@/app/actions/experience.actions";
 import { Save, Loader2, Trash2 } from "lucide-react";
 
 interface ExperienceFormProps {

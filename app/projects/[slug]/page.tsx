@@ -10,7 +10,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const { slug } = await params;
-  const project = await prisma.project.findUnique({ where: { slug } });
+  const project = await prisma.project.findUnique({ where: { slug, published: true } });
   if (!project) return { title: "Project Not Found" };
   return {
     title: `${project.name} | John Edeh`,
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const { slug } = await params;
   const project = await prisma.project.findUnique({
-    where: { slug },
+    where: { slug, published: true },
     include: {
       images: { orderBy: { order: "asc" } },
       stack: { orderBy: { category: "asc" } },
@@ -29,7 +29,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
     },
   });
 
-  if (!project || !project.published) {
+  if (!project) {
     notFound();
   }
 

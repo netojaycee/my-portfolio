@@ -5,7 +5,7 @@ import { GitHubIcon } from "@/components/ui/Icons";
 import Link from "next/link";
 import Image from "next/image";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { togglePublished, deleteProject } from "@/actions/project.actions";
+import { togglePublished, deleteProject } from "@/app/actions/project.actions";
 
 export default async function AdminProjectsPage() {
   const projects = await prisma.project.findMany({

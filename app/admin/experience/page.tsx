@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Plus, GripVertical, Edit2, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { deleteExperience } from "@/actions/experience.actions";
+import { deleteExperience } from "@/app/actions/experience.actions";
 
 export default async function AdminExperiencePage() {
   const experiences = await prisma.experience.findMany({
