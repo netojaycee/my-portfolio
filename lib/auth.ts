@@ -10,7 +10,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (credentials.email !== process.env.ADMIN_EMAIL) return null;
+        const inputEmail = (credentials.email as string)?.trim().toLowerCase();
+        const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+        if (!inputEmail || inputEmail !== adminEmail) return null;
 
         const valid = await bcrypt.compare(
           credentials.password as string,

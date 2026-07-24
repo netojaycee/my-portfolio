@@ -21,7 +21,21 @@
       "Bash(curl -s -o /dev/null -w \"robots.txt -> %{http_code}\\\\n\" http://localhost:3001/robots.txt)",
       "Bash(curl -s -o /dev/null -w \"home -> %{http_code}\\\\n\" http://localhost:3001/)",
       "Bash(curl -s http://localhost:3001/robots.txt)",
-      "Bash(curl -s http://localhost:3001/)"
+      "Bash(curl -s http://localhost:3001/)",
+      "Bash(sips -g pixelWidth -g pixelHeight public/me.jpeg)",
+      "Bash(cp public/me.jpeg /tmp_me_favtest.jpeg)",
+      "Bash(sips -c 750 750 public/me.jpeg --out /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-square.png)",
+      "Bash(sips -z 512 512 /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-square.png --out /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-512.png)",
+      "Bash(rm -f /tmp_me_favtest.jpeg)",
+      "Bash(sips -s format png -c 750 750 public/me.jpeg --out /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-square.png)",
+      "Bash(sips -s format png -z 512 512 /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-square.png --out /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/icon-512.png)",
+      "Bash(sips -s format png -z 180 180 /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-square.png --out /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/apple-icon-180.png)",
+      "Bash(sips -s format png -z 32 32 /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-square.png --out /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/favicon-32.png)",
+      "Bash(curl -s -o /private/tmp/claude-501/-Users-jaycee-projects-my-portfolio/43bbc064-b60c-4925-a2e8-366c89f4d7c7/scratchpad/og-test.png -w \"og status:%{http_code} type:%{content_type}\\\\n\" http://localhost:3001/opengraph-image)",
+      "Bash(curl -s -o /dev/null -w \"icon.png status:%{http_code}\\\\n\" http://localhost:3001/icon.png)",
+      "Bash(curl -s -o /dev/null -w \"manifest status:%{http_code}\\\\n\" http://localhost:3001/manifest.webmanifest)",
+      "Bash(pnpm admin:hash \"test123\")",
+      "Bash(awk -F= '{print $1\"=\"\\(length\\($2\\)>0 ? \"<set, \"length\\($2\\)\" chars>\" : \"<EMPTY>\"\\)}')"
     ]
   }
 }

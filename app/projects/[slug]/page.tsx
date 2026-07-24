@@ -18,11 +18,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await prisma.project.findUnique({
     where: { slug, published: true },
-    include: { images: { orderBy: { order: "asc" }, take: 1 } },
   });
   if (!project) return { title: "Project Not Found" };
 
-  const heroImage = project.images[0]?.url;
   const title = `${project.name} | ${project.tagline}`;
 
   return {
@@ -36,13 +34,11 @@ export async function generateMetadata({
       title,
       description: project.description,
       url: `${SITE_URL}/projects/${project.slug}`,
-      images: heroImage ? [{ url: heroImage, width: 1200, height: 630, alt: project.name }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description: project.description,
-      images: heroImage ? [heroImage] : undefined,
     },
   };
 }
