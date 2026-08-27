@@ -12,6 +12,21 @@ async function requireAdmin() {
   if (!session) throw new Error("Unauthorized");
 }
 
+type ImageInput = { url: string; alt?: string };
+type StackInput = { name: string; category: string };
+type HighlightInput = { text: string };
+
+function parseJsonField<T>(formData: FormData, key: string): T[] {
+  const raw = formData.get(key) as string | null;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function createProject(
   _prev: ActionResult,
   formData: FormData
@@ -30,6 +45,10 @@ export async function createProject(
     const featured = formData.get("featured") === "on";
     const published = formData.get("published") === "on";
 
+    const images = parseJsonField<ImageInput>(formData, "imagesJson");
+    const stack = parseJsonField<StackInput>(formData, "stackJson");
+    const highlights = parseJsonField<HighlightInput>(formData, "highlightsJson");
+
     await prisma.project.create({
       data: {
         name,
@@ -43,6 +62,9 @@ export async function createProject(
         category,
         featured,
         published,
+        images: { create: images.map((img, i) => ({ url: img.url, alt: img.alt || "", order: i })) },
+        stack: { create: stack.map((s) => ({ name: s.name, category: s.category as any })) },
+        highlights: { create: highlights.map((h, i) => ({ text: h.text, order: i })) },
       },
     });
 
@@ -74,6 +96,16 @@ export async function updateProject(
     const featured = formData.get("featured") === "on";
     const published = formData.get("published") === "on";
 
+    const images = parseJsonField<ImageInput>(formData, "imagesJson");
+    const stack = parseJsonField<StackInput>(formData, "stackJson");
+    const highlights = parseJsonField<HighlightInput>(formData, "highlightsJson");
+
+    // Run sequentially rather than wrapped in prisma.$transaction([...]): an
+    // interactive transaction needs to hold one connection across every
+    // statement, and over Neon's pooled connection string that reliably hit
+    // P2028 ("unable to start a transaction in the given time") even with a
+    // generous timeout. Sacrifices atomicity on a mid-request crash, an
+    // acceptable tradeoff for a low-concurrency personal admin panel.
     await prisma.project.update({
       where: { id },
       data: {
@@ -90,6 +122,24 @@ export async function updateProject(
         published,
       },
     });
+    await prisma.projectImage.deleteMany({ where: { projectId: id } });
+    await prisma.stackItem.deleteMany({ where: { projectId: id } });
+    await prisma.highlight.deleteMany({ where: { projectId: id } });
+    if (images.length) {
+      await prisma.projectImage.createMany({
+        data: images.map((img, i) => ({ url: img.url, alt: img.alt || "", order: i, projectId: id })),
+      });
+    }
+    if (stack.length) {
+      await prisma.stackItem.createMany({
+        data: stack.map((s) => ({ name: s.name, category: s.category as any, projectId: id })),
+      });
+    }
+    if (highlights.length) {
+      await prisma.highlight.createMany({
+        data: highlights.map((h, i) => ({ text: h.text, order: i, projectId: id })),
+      });
+    }
 
     revalidatePath("/");
     revalidatePath(`/projects/${slug}`);
@@ -126,14 +176,11 @@ export async function togglePublished(id: string, published: boolean, _formData?
 export async function reorderProjects(ids: string[]): Promise<ActionResult> {
   await requireAdmin();
   try {
-    await prisma.$transaction(
-      ids.map((id, index) =>
-        prisma.project.update({
-          where: { id },
-          data: { order: index },
-        })
-      )
-    );
+    // Sequential, not $transaction — see note in updateProject about Neon's
+    // pooled connection and interactive transactions.
+    for (const [index, id] of ids.entries()) {
+      await prisma.project.update({ where: { id }, data: { order: index } });
+    }
     revalidatePath("/");
     revalidatePath("/admin/projects");
     return { success: true };

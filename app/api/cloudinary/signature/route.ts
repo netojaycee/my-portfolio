@@ -19,9 +19,15 @@ export async function GET() {
 }
 
 function generateSignature(timestamp: number): string {
-  // Use Cloudinary's v2 signature approach
+  // Cloudinary verifies signatures with SHA-1 by default (not SHA-256) unless
+  // the account explicitly configures a different signature_algorithm.
+  // It also only includes params with a real value in the string it signs —
+  // an empty upload_preset must be OMITTED here to match, not sent as "".
   const crypto = require("crypto");
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
-  const toSign = `timestamp=${timestamp}&upload_preset=${uploadPreset}${process.env.CLOUDINARY_API_SECRET}`;
-  return crypto.createHash("sha256").update(toSign).digest("hex");
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+  const params = uploadPreset
+    ? `timestamp=${timestamp}&upload_preset=${uploadPreset}`
+    : `timestamp=${timestamp}`;
+  const toSign = `${params}${process.env.CLOUDINARY_API_SECRET}`;
+  return crypto.createHash("sha1").update(toSign).digest("hex");
 }

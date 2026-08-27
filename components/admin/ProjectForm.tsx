@@ -1,21 +1,33 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useRef } from "react";
 import { createProject, updateProject } from "@/app/actions/project.actions";
-import { Trash2, Save, Loader2 } from "lucide-react";
-
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import { Trash2, Save, Loader2, Upload, ArrowUp, ArrowDown, ImageIcon } from "lucide-react";
 
 interface ProjectFormProps {
   initialData?: any; // Full project with includes
 }
 
+const STACK_CATEGORIES = ["FRONTEND", "BACKEND", "DEVOPS", "DATABASE", "INFRA"];
+const PROJECT_CATEGORIES = ["SAAS", "MARKETPLACE", "ECOMMERCE", "MANAGEMENT", "DEVOPS", "DESKTOP"];
+
 export function ProjectForm({ initialData }: ProjectFormProps) {
   const isEdit = !!initialData;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for dynamic lists
-  const [images, setImages] = useState(initialData?.images || []);
-  const [stack, setStack] = useState(initialData?.stack || []);
-  const [highlights, setHighlights] = useState(initialData?.highlights || []);
+  const [images, setImages] = useState<{ url: string; alt: string }[]>(
+    (initialData?.images || []).map((img: any) => ({ url: img.url, alt: img.alt || "" }))
+  );
+  const [stack, setStack] = useState<{ id: string; name: string; category: string }[]>(
+    (initialData?.stack || []).map((s: any) => ({ id: s.id || Math.random().toString(), name: s.name, category: s.category }))
+  );
+  const [highlights, setHighlights] = useState<{ id: string; text: string }[]>(
+    (initialData?.highlights || []).map((h: any) => ({ id: h.id || Math.random().toString(), text: h.text }))
+  );
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   const [state, formAction, isPending] = useActionState(
     isEdit ? updateProject.bind(null, initialData.id) : createProject,
@@ -25,21 +37,57 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
   const addStackItem = () => {
     setStack([...stack, { id: Math.random().toString(), name: "", category: "FRONTEND" }]);
   };
+  const removeStackItem = (id: string) => setStack(stack.filter((item) => item.id !== id));
+  const updateStackItem = (id: string, patch: Partial<{ name: string; category: string }>) =>
+    setStack(stack.map((item) => (item.id === id ? { ...item, ...patch } : item)));
 
-  const removeStackItem = (id: string) => {
-    setStack(stack.filter((item: any) => item.id !== id));
+  const addHighlight = () => setHighlights([...highlights, { id: Math.random().toString(), text: "" }]);
+  const removeHighlight = (id: string) => setHighlights(highlights.filter((item) => item.id !== id));
+  const updateHighlight = (id: string, text: string) =>
+    setHighlights(highlights.map((item) => (item.id === id ? { ...item, text } : item)));
+
+  const handleFilesSelected = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    setUploading(true);
+    setUploadError("");
+    try {
+      const uploaded: { url: string; alt: string }[] = [];
+      for (const file of Array.from(fileList)) {
+        const url = await uploadToCloudinary(file);
+        uploaded.push({ url, alt: "" });
+      }
+      setImages((prev) => [...prev, ...uploaded]);
+    } catch (e: any) {
+      setUploadError(e?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
-  const addHighlight = () => {
-    setHighlights([...highlights, { id: Math.random().toString(), text: "", order: highlights.length }]);
-  };
-
-  const removeHighlight = (id: string) => {
-    setHighlights(highlights.filter((item: any) => item.id !== id));
+  const removeImage = (index: number) => setImages(images.filter((_, i) => i !== index));
+  const moveImage = (index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= images.length) return;
+    const next = [...images];
+    [next[index], next[target]] = [next[target], next[index]];
+    setImages(next);
   };
 
   return (
     <form action={formAction} className="space-y-12 max-w-5xl">
+      <input type="hidden" name="imagesJson" value={JSON.stringify(images)} />
+      <input
+        type="hidden"
+        name="stackJson"
+        value={JSON.stringify(stack.filter((s) => s.name.trim()).map((s) => ({ name: s.name, category: s.category })))}
+      />
+      <input
+        type="hidden"
+        name="highlightsJson"
+        value={JSON.stringify(highlights.filter((h) => h.text.trim()).map((h) => ({ text: h.text })))}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Main Info */}
         <div className="lg:col-span-2 space-y-8">
@@ -100,6 +148,127 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
             </div>
           </section>
 
+          {/* Images */}
+          <section className="p-8 rounded-2xl bg-surface border border-border space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-syne font-bold text-text uppercase tracking-tight">Images</h3>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-2 text-xs font-mono text-accent hover:underline uppercase tracking-widest disabled:opacity-50"
+              >
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {uploading ? "Uploading..." : "Upload Images"}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFilesSelected(e.target.files)}
+              />
+            </div>
+
+            {uploadError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+                {uploadError}
+              </div>
+            )}
+
+            {images.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 py-10 text-dim border border-dashed border-border rounded-xl">
+                <ImageIcon className="w-8 h-8" />
+                <p className="text-sm">No images yet. First image becomes the hero image.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {images.map((img, index) => (
+                  <div key={img.url + index} className="relative group rounded-xl overflow-hidden border border-border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img.url} alt={img.alt || ""} className="w-full h-32 object-cover" />
+                    {index === 0 && (
+                      <span className="absolute top-2 left-2 text-[10px] font-mono uppercase tracking-widest bg-accent text-white px-2 py-1 rounded-md">
+                        Hero
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => moveImage(index, -1)}
+                        disabled={index === 0}
+                        className="p-2 rounded-lg bg-surface text-text disabled:opacity-30"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveImage(index, 1)}
+                        disabled={index === images.length - 1}
+                        className="p-2 rounded-lg bg-surface text-text disabled:opacity-30"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="p-2 rounded-lg bg-red-500/80 text-white"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Stack Items */}
+          <section className="p-8 rounded-2xl bg-surface border border-border space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-syne font-bold text-text uppercase tracking-tight">Stack</h3>
+              <button
+                type="button"
+                onClick={addStackItem}
+                className="text-xs font-mono text-accent hover:underline uppercase tracking-widest"
+              >
+                + Add Stack Item
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {stack.map((item) => (
+                <div key={item.id} className="flex gap-3">
+                  <input
+                    value={item.name}
+                    onChange={(e) => updateStackItem(item.id, { name: e.target.value })}
+                    placeholder="e.g. NestJS"
+                    className="flex-1 h-11 px-4 rounded-xl bg-surface-2 border border-border focus:border-accent outline-none transition-all text-text text-sm"
+                  />
+                  <select
+                    value={item.category}
+                    onChange={(e) => updateStackItem(item.id, { category: e.target.value })}
+                    className="h-11 px-3 rounded-xl bg-surface-2 border border-border focus:border-accent outline-none transition-all text-text text-sm"
+                  >
+                    {STACK_CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => removeStackItem(item.id)}
+                    className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Highlights */}
           <section className="p-8 rounded-2xl bg-surface border border-border space-y-6">
             <div className="flex items-center justify-between">
@@ -114,12 +283,12 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
             </div>
 
             <div className="space-y-4">
-              {highlights.map((h: any, index: number) => (
+              {highlights.map((h) => (
                 <div key={h.id} className="flex gap-4">
                   <div className="flex-1">
                     <input
-                      name={`highlights[${index}].text`}
-                      defaultValue={h.text}
+                      value={h.text}
+                      onChange={(e) => updateHighlight(h.id, e.target.value)}
                       className="w-full h-12 px-4 rounded-xl bg-surface-2 border border-border focus:border-accent outline-none transition-all text-text text-sm"
                       placeholder="Enter a technical highlight..."
                     />
@@ -150,11 +319,11 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
                   defaultValue={initialData?.category || "SAAS"}
                   className="w-full h-12 px-4 rounded-xl bg-surface-2 border border-border focus:border-accent outline-none transition-all text-text"
                 >
-                  <option value="SAAS">SaaS</option>
-                  <option value="MARKETPLACE">Marketplace</option>
-                  <option value="ECOMMERCE">E-Commerce</option>
-                  <option value="MANAGEMENT">Management</option>
-                  <option value="DEVOPS">DevOps</option>
+                  {PROJECT_CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c.charAt(0) + c.slice(1).toLowerCase()}
+                    </option>
+                  ))}
                 </select>
               </div>
 
