@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ExperienceForm } from "@/components/admin/ExperienceForm";
 
-export default async function EditExperiencePage({ params }: { params: { id: string } }) {
+export default async function EditExperiencePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const experience = await prisma.experience.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       bullets: { orderBy: { order: "asc" } },
       tags: true,
