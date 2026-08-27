@@ -43,8 +43,8 @@ export function About() {
                 Whether it&apos;s configuring a{" "}
                 <strong className="text-text font-semibold">CI/CD pipeline</strong> that
                 auto-updates on-premise Docker installations, or designing a{" "}
-                <strong className="text-text font-semibold">FIFO-based P&amp;L engine</strong>{" "}
-                for a petroleum marketplace — I approach every problem with data integrity,
+                <strong className="text-text font-semibold">multi-tenant permissions model</strong>{" "}
+                for a B2B SaaS platform — I approach every problem with data integrity,
                 real-time performance, and production reliability at the centre.
               </p>
               <p>
