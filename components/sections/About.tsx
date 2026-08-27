@@ -5,7 +5,7 @@ import { SectionHeader } from "../ui/SectionHeader";
 import { Code2, Server, Globe, ShieldCheck } from "lucide-react";
 
 const stats = [
-  { label: "Production Apps", value: "7+", icon: Globe },
+  { label: "Production Apps", value: "10+", icon: Globe },
   { label: "Infrastructure Fleet", value: "10+", icon: Server },
   { label: "Years Experience", value: "5+", icon: Code2 },
   { label: "System Uptime", value: "99.9%", icon: ShieldCheck },
@@ -50,9 +50,8 @@ export function About() {
               <p>
                 Currently at{" "}
                 <strong className="text-text font-semibold">The Punch Nigeria Ltd</strong>, managing
-                web infrastructure serving millions of readers daily. Also building{" "}
-                <strong className="text-text font-semibold">Vendra</strong>, a platform to empower
-                Nigerian micro-merchants with professional digital storefronts.
+                web infrastructure serving millions of readers daily — alongside a string of
+                solo-built and client SaaS platforms shipped to real production traffic.
               </p>
             </div>
           </motion.div>
