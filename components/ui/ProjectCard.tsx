@@ -6,8 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, ArrowRight } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
+import { ProjectPreview } from "./ProjectPreview";
 import { GitHubIcon } from "./Icons";
 import { cn } from "@/lib/utils";
+import { SHOW_PROJECT_IMAGES } from "@/lib/config";
 
 interface ProjectCardProps {
   project: Project;
@@ -15,7 +17,9 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, featured }: ProjectCardProps) {
-  const heroImage = project.images.sort((a, b) => a.order - b.order)[0]?.url || "/placeholder-project.jpg";
+  const heroImage = SHOW_PROJECT_IMAGES
+    ? project.images.sort((a, b) => a.order - b.order)[0]?.url
+    : undefined;
 
   return (
     <motion.div
@@ -38,16 +42,22 @@ export function ProjectCard({ project, featured }: ProjectCardProps) {
           featured ? "md:w-[45%] aspect-video md:aspect-auto" : "aspect-video"
         )}
       >
-        <Image
-          src={heroImage}
-          alt={project.name}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg/70 via-bg/20 to-transparent" />
-        <div className="absolute top-4 left-4">
-          <StatusBadge status={project.status} />
-        </div>
+        {heroImage ? (
+          <>
+            <Image
+              src={heroImage}
+              alt={project.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg/70 via-bg/20 to-transparent" />
+            <div className="absolute top-4 left-4">
+              <StatusBadge status={project.status} />
+            </div>
+          </>
+        ) : (
+          <ProjectPreview slug={project.slug} category={project.category} status={project.status} />
+        )}
       </div>
 
       {/* Content */}

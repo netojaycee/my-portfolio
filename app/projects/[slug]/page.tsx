@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ImageGallery } from "@/components/ui/ImageGallery";
+import { ProjectPreview } from "@/components/ui/ProjectPreview";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { SHOW_PROJECT_IMAGES } from "@/lib/config";
 import { Mouse, ExternalLink, ArrowLeft, Terminal, Rocket, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -110,7 +112,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
           {/* Gallery */}
           <div className="mb-20">
-            <ImageGallery images={project.images} />
+            {SHOW_PROJECT_IMAGES && project.images.length > 0 ? (
+              <ImageGallery images={project.images} />
+            ) : (
+              <div className="rounded-2xl border border-border overflow-hidden aspect-video">
+                <ProjectPreview slug={project.slug} category={project.category} status={project.status} />
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
