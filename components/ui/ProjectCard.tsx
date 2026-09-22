@@ -87,9 +87,15 @@ export function ProjectCard({ project, featured }: ProjectCardProps) {
         <h3 className="mb-2 text-xl md:text-2xl font-syne font-bold text-text group-hover:text-accent transition-colors duration-200">
           {project.name}
         </h3>
-        <p className="mb-6 text-sm text-muted font-lora leading-relaxed line-clamp-3">
+        <p className="mb-3 text-sm text-muted font-lora leading-relaxed line-clamp-2">
           {project.tagline}
         </p>
+        {project.highlights[0] && (
+          <p className="mb-6 text-xs font-mono text-accent/90 leading-relaxed line-clamp-2">
+            <span className="text-accent/60">$ </span>
+            {project.highlights[0].text}
+          </p>
+        )}
 
         <div className="mt-auto flex items-center gap-4">
           <Link

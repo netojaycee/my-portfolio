@@ -9,6 +9,7 @@ export async function Projects() {
     include: {
       images: { orderBy: { order: "asc" } },
       stack: true,
+      highlights: { orderBy: { order: "asc" } },
     },
   });
 

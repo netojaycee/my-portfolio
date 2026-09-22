@@ -5,10 +5,10 @@ import { SectionHeader } from "../ui/SectionHeader";
 import { Code2, Server, Globe, ShieldCheck } from "lucide-react";
 
 const stats = [
-  { label: "Production Apps", value: "10+", icon: Globe },
-  { label: "Infrastructure Fleet", value: "10+", icon: Server },
+  { label: "Monthly Pageviews Managed", value: "23M+", icon: Globe },
+  { label: "SaaS Products Shipped Solo", value: "7", icon: Server },
   { label: "Years Experience", value: "5+", icon: Code2 },
-  { label: "System Uptime", value: "99.9%", icon: ShieldCheck },
+  { label: "504 Outage: Diagnosed & Fixed", value: "15min", icon: ShieldCheck },
 ];
 
 export function About() {
@@ -25,33 +25,36 @@ export function About() {
             className="space-y-8"
           >
             <SectionHeader
-              title="A Systems-First Developer."
-              subtitle="I don't just build features — I build platforms. My focus is the intersection of application logic and the underlying infrastructure that makes it scale."
+              title="I fix production, then I build the next thing."
+              subtitle="Mechanical engineering graduate turned production infrastructure and SaaS builder — I run the servers and write the code that runs on them."
             />
 
             <div className="space-y-5 text-muted font-lora text-[1.05rem] leading-[1.85]">
               <p>
-                My journey began with deep curiosity about how large-scale systems stay online.
-                Today I specialise in full-stack applications with{" "}
-                <strong className="text-text font-semibold">Next.js</strong> and{" "}
-                <strong className="text-text font-semibold">NestJS</strong>, while
-                simultaneously architecting the{" "}
-                <strong className="text-text font-semibold">AWS</strong> and{" "}
-                <strong className="text-text font-semibold">Nginx</strong> environments they run on.
+                John Chinonso Edeh is a Full-Stack and DevOps Engineer in Lagos,
+                Nigeria.
               </p>
               <p>
-                Whether it&apos;s configuring a{" "}
-                <strong className="text-text font-semibold">CI/CD pipeline</strong> that
-                auto-updates on-premise Docker installations, or designing a{" "}
-                <strong className="text-text font-semibold">multi-tenant permissions model</strong>{" "}
-                for a B2B SaaS platform — I approach every problem with data integrity,
-                real-time performance, and production reliability at the centre.
+                He runs production infrastructure for{" "}
+                <strong className="text-text font-semibold">The Punch Nigeria Ltd</strong>,
+                the country&apos;s largest news publisher — a self-managed Docker /
+                Nginx / PHP-FPM / MySQL / Redis stack on AWS serving{" "}
+                <strong className="text-text font-semibold">23M+ pageviews a month</strong>.
+                Recent work: root-caused a full-site 504 outage down to a
+                memory-limit conflict between two unrelated commits and fixed it
+                live in 15 minutes; found and closed a reflected XSS
+                vulnerability; cut editor publish latency from 40+ seconds to
+                normal by tracing three blocking calls through New Relic; stopped
+                a 15,000-request sitemap-scraper stampede that was taking the
+                site down nightly.
               </p>
               <p>
-                Currently at{" "}
-                <strong className="text-text font-semibold">The Punch Nigeria Ltd</strong>, managing
-                web infrastructure serving millions of readers daily — alongside a string of
-                solo-built and client SaaS platforms shipped to real production traffic.
+                In parallel he ships his own products end to end — architecture,
+                backend, frontend, and the infrastructure they run on. Multi-tenant
+                SaaS with dual deployment modes, marketplace platforms with
+                real-time negotiation and FIFO cost engines, e-commerce with live
+                Stripe payments. Production systems used by real businesses, not
+                tutorials.
               </p>
             </div>
           </motion.div>

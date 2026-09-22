@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Download, ChevronDown, Terminal as TerminalIcon } from "lucide-react";
+import { ArrowRight, Download, ChevronDown, ExternalLink, Terminal as TerminalIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -20,16 +20,18 @@ interface TerminalLine {
 }
 
 const terminalLines: TerminalLine[] = [
-  { type: "prompt", dir: "~/john-portfolio", text: "git checkout main" },
-  { type: "output", text: "Switched to branch 'main' — up to date." },
+  { type: "prompt", dir: "~", text: "whoami" },
+  { type: "output", text: "John Edeh — Full-Stack & DevOps Engineer" },
   { type: "blank", text: "" },
-  { type: "prompt", dir: "~/john-portfolio", text: "pnpm build && pnpm deploy" },
-  { type: "info", text: "Building production bundle..." },
-  { type: "success", text: "✓  Next.js 16 optimised (0 warnings)" },
-  { type: "success", text: "✓  Prisma schema pushed to Neon DB" },
-  { type: "success", text: "✓  Docker images pushed to registry" },
-  { type: "success", text: "✓  Terraform infra verified — no drift" },
-  { type: "success", text: "✓  Deployed to production  🚀" },
+  { type: "prompt", dir: "~", text: "uptime --site punchng.com" },
+  { type: "success", text: "✓  23M+ pageviews/month · self-managed infra" },
+  { type: "blank", text: "" },
+  { type: "prompt", dir: "~", text: "last-incident --status" },
+  { type: "info", text: "504 outage on prod (load avg 150)" },
+  { type: "success", text: "✓  root-caused & fixed live in 15 min" },
+  { type: "blank", text: "" },
+  { type: "prompt", dir: "~", text: "ls ~/shipped" },
+  { type: "output", text: "7 production SaaS platforms · solo-built" },
 ];
 
 export function Hero() {
@@ -114,26 +116,29 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              {/* Badge */}
-              <motion.span
+              {/* Badge — the proof point, first thing read */}
+              <motion.a
+                href="https://punchng.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1, duration: 0.4 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-[11px] font-mono font-bold uppercase tracking-[0.2em] mb-8"
+                className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-2 px-4 py-1.5 rounded-2xl bg-accent/10 border border-accent/30 text-accent text-[11px] font-mono font-bold uppercase tracking-[0.1em] mb-6 max-w-[320px] sm:max-w-none mx-auto lg:mx-0 text-center lg:text-left hover:bg-accent/15 hover:border-accent/50 transition-colors"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                Available for Work — Lagos, Nigeria
-              </motion.span>
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shrink-0" />
+                <span>Running infra for 23M+ pageviews/mo at Punch Nigeria (Punch Newspaper)</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
+              </motion.a>
 
               {/* Heading */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.6 }}
-                className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-syne font-extrabold tracking-tighter text-text mb-4 leading-[1.05]"
+                className="text-3xl md:text-4xl lg:text-5xl font-syne font-extrabold tracking-tighter text-text mb-3 leading-[1.05]"
               >
-                Hi, I&apos;m{" "}
-                <span className="gradient-text">John Edeh</span>.
+                <span className="gradient-text">John Edeh</span>
               </motion.h1>
 
               {/* Typewriter role */}
@@ -141,14 +146,11 @@ export function Hero() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.35, duration: 0.5 }}
-                className="h-12 md:h-14 flex items-center justify-center lg:justify-start mb-6"
+                className="h-10 md:h-12 flex items-center justify-center lg:justify-start mb-6"
               >
-                <span className="text-2xl md:text-3xl font-syne font-semibold text-muted">
-                  I build as a{" "}
-                  <span className="text-text">
-                    {displayedRole}
-                    <span className="cursor-blink text-accent ml-0.5">|</span>
-                  </span>
+                <span className="text-xl md:text-2xl font-syne font-semibold text-muted">
+                  {displayedRole}
+                  <span className="cursor-blink text-accent ml-0.5">|</span>
                 </span>
               </motion.div>
 
@@ -159,9 +161,8 @@ export function Hero() {
                 transition={{ delay: 0.45, duration: 0.5 }}
                 className="text-base md:text-lg text-muted font-lora max-w-xl mb-10 leading-relaxed mx-auto lg:mx-0"
               >
-                I architect production-grade web platforms and the automated cloud
-                infrastructure they run on — from Next.js frontends to Terraform
-                pipelines and Nginx reverse-proxies.
+                I ship SaaS products end to end — architecture, backend,
+                frontend, and the infrastructure they run on.
               </motion.p>
 
               {/* CTAs */}
@@ -196,9 +197,9 @@ export function Hero() {
                 className="mt-12 flex items-center justify-center lg:justify-start gap-8 border-t border-border/50 pt-8"
               >
                 {[
-                  { val: "5+", label: "Years" },
-                  { val: "10+", label: "Projects" },
-                  { val: "99.9%", label: "Uptime" },
+                  { val: "23M+", label: "Pageviews/Mo" },
+                  { val: "7", label: "SaaS Shipped" },
+                  { val: "15min", label: "Outage Fixed" },
                 ].map((s) => (
                   <div key={s.label} className="text-center lg:text-left">
                     <div className="text-2xl font-syne font-bold text-text">{s.val}</div>
