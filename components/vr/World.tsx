@@ -156,10 +156,10 @@ function ProjectsWall({ projects }: { projects: VRProject[] }) {
             <Text font={FONT} fontSize={0.075} color={C.dim} position={[0.14, -0.05, 0]} anchorX="left" anchorY="middle">
               {statusLabel(p.status)}
             </Text>
-            <Text font={FONT_BOLD} fontSize={0.15} color={C.text} position={[0, -0.2, 0]} maxWidth={2.1} anchorX="left" anchorY="top">
+            <Text font={FONT_BOLD} fontSize={0.13} color={C.text} position={[0, -0.2, 0]} maxWidth={2.15} anchorX="left" anchorY="top">
               {clip(p.name, 26)}
             </Text>
-            <Text font={FONT} fontSize={0.082} color={C.dim} position={[0, -0.45, 0]} maxWidth={2.1} anchorX="left" anchorY="top" lineHeight={1.35}>
+            <Text font={FONT} fontSize={0.082} color={C.dim} position={[0, -0.42, 0]} maxWidth={2.1} anchorX="left" anchorY="top" lineHeight={1.35}>
               {clip(p.tagline, 62)}
             </Text>
             <Text font={FONT} fontSize={0.07} color={C.accent} position={[0, -0.92, 0]} maxWidth={2.1} anchorX="left" anchorY="top">
