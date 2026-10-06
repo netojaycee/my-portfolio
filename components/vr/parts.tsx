@@ -6,6 +6,7 @@ import { Text } from "@react-three/drei";
 import { Vector3, MathUtils } from "three";
 import type { Group } from "three";
 import { useVRStore, type PanelPose } from "./store";
+import { trackEvent } from "@/lib/track";
 
 export const FONT = "/fonts/jetbrains-mono-500.woff";
 export const FONT_BOLD = "/fonts/jetbrains-mono-700.woff";
@@ -93,6 +94,7 @@ export function useHover() {
  */
 export function Tile({
   id,
+  label,
   width,
   height,
   position,
@@ -100,6 +102,7 @@ export function Tile({
   children,
 }: {
   id: string;
+  label?: string;
   width: number;
   height: number;
   position: [number, number, number];
@@ -129,7 +132,10 @@ export function Tile({
           onClick={(e) => {
             e.stopPropagation();
             if (selected) select(null);
-            else select(id, poseFor());
+            else {
+              select(id, poseFor());
+              trackEvent("card_open", { card: label ?? id, kind: id.startsWith("inc-") ? "incident" : "project", where: "3d" });
+            }
           }}
         >
           <boxGeometry args={[width, height, 0.06]} />

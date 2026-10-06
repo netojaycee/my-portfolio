@@ -9,6 +9,7 @@ export type VRProject = {
   tagline: string;
   description: string;
   liveUrl: string | null;
+  featured: boolean;
   status: ProjectStatus;
   stack: string[];
   highlights: string[];

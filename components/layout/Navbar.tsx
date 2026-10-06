@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X, Terminal, Box } from "lucide-react";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/track";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
@@ -96,6 +97,7 @@ export function Navbar() {
           </ul>
           <Link
             href="/"
+            onClick={() => trackEvent("view_switch", { to: "3d" })}
             className="flex items-center gap-2 rounded-lg bg-accent px-3.5 py-2 text-xs font-mono font-bold uppercase tracking-wider text-black transition-colors hover:bg-accent-hover"
           >
             <Box className="h-4 w-4" />
@@ -109,6 +111,7 @@ export function Navbar() {
         <div className="flex items-center gap-3 md:hidden">
           <Link
             href="/"
+            onClick={() => trackEvent("view_switch", { to: "3d" })}
             className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-[11px] font-mono font-bold uppercase tracking-wider text-black"
           >
             <Box className="h-4 w-4" />

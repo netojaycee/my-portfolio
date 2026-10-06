@@ -58,6 +58,7 @@ async function getVRData(): Promise<VRData> {
       tagline: p.tagline,
       description: p.description,
       liveUrl: p.liveUrl,
+      featured: p.featured,
       status: p.status,
       stack: p.stack.map((s) => s.name),
       highlights: p.highlights.map((h) => h.text),

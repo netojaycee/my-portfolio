@@ -6,6 +6,7 @@ import { Text } from "@react-three/drei";
 import type { Mesh, MeshBasicMaterial } from "three";
 import { Color } from "three";
 import { C, FONT, FONT_BOLD, useHover } from "./parts";
+import { trackEvent } from "@/lib/track";
 
 // Replay of the real incident: full-site 504, host load average 150 → 23, fixed
 // live in ~15 minutes. The racks in the room read this signal so their LEDs go
@@ -86,6 +87,7 @@ export function NOC({ position }: { position: [number, number, number] }) {
         onClick={(e) => {
           e.stopPropagation();
           t0.current = clock.elapsedTime;
+          trackEvent("noc_replay");
         }}
       >
         <boxGeometry args={[8.8, 2.1, 0.06]} />

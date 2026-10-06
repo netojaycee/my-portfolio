@@ -1,6 +1,7 @@
 import { ArrowUpRight, Download, Mail } from "lucide-react";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import { CONTACT, HERO } from "./content";
+import { TrackedLink } from "./TrackedLink";
 
 // Server component: real, crawlable text that is visible the instant the page
 // loads — before (and regardless of whether) the 3D scene boots.
@@ -12,7 +13,9 @@ export function HeroOverlay() {
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
         <div className="min-w-0 lg:max-w-2xl">
-          <a
+          <TrackedLink
+            event="cta_click"
+            cta="punch_badge"
             href={CONTACT.punch}
             target="_blank"
             rel="noopener noreferrer"
@@ -21,7 +24,7 @@ export function HeroOverlay() {
             <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-accent" />
             {HERO.badge}
             <ArrowUpRight className="h-3 w-3 shrink-0" />
-          </a>
+          </TrackedLink>
           <h1 className="font-syne text-2xl font-extrabold leading-none tracking-tight text-text sm:text-3xl">
             {HERO.name}
             <span className="ml-3 align-middle font-mono text-[11px] font-medium tracking-normal text-muted sm:text-xs">
@@ -43,21 +46,27 @@ export function HeroOverlay() {
         </dl>
 
         <div className="flex shrink-0 flex-wrap gap-2">
-          <a
+          <TrackedLink
+            event="cta_click"
+            cta="hire_me"
             href={`mailto:${CONTACT.email}`}
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-black transition-colors hover:bg-accent-hover"
           >
             <Mail className="h-4 w-4" />
             Hire me
-          </a>
-          <a
+          </TrackedLink>
+          <TrackedLink
+            event="cta_click"
+            cta="cv"
             href={CONTACT.cv}
             className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-text transition-colors hover:border-accent hover:text-accent"
           >
             <Download className="h-4 w-4" />
             CV
-          </a>
-          <a
+          </TrackedLink>
+          <TrackedLink
+            event="cta_click"
+            cta="linkedin"
             href={CONTACT.linkedin}
             target="_blank"
             rel="noopener noreferrer"
@@ -65,8 +74,10 @@ export function HeroOverlay() {
             className="inline-flex items-center rounded-lg border border-border px-3 py-2.5 text-text transition-colors hover:border-accent hover:text-accent"
           >
             <LinkedInIcon className="h-4 w-4" />
-          </a>
-          <a
+          </TrackedLink>
+          <TrackedLink
+            event="cta_click"
+            cta="github"
             href={CONTACT.github}
             target="_blank"
             rel="noopener noreferrer"
@@ -74,7 +85,7 @@ export function HeroOverlay() {
             className="inline-flex items-center rounded-lg border border-border px-3 py-2.5 text-text transition-colors hover:border-accent hover:text-accent"
           >
             <GitHubIcon className="h-4 w-4" />
-          </a>
+          </TrackedLink>
         </div>
       </div>
     </section>

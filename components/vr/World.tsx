@@ -19,6 +19,7 @@ import {
   clip,
 } from "./parts";
 import { CONTACT } from "./content";
+import { trackEvent } from "@/lib/track";
 import type { DetailItem, VRData, VRExperience, VRProject, VRSkillCategory } from "./types";
 
 function statusColor(status: VRProject["status"]) {
@@ -115,7 +116,7 @@ function ProofWall({ data }: { data: VRData }) {
       </Text>
       <NOC position={[0, 3.65, 0.05]} />
       {data.incidents.map((inc, i) => (
-        <Tile key={inc.id} id={inc.id} width={1.65} height={2.2} position={[(i - (n - 1) / 2) * 1.76, 1.4, 0.05]} highlight>
+        <Tile key={inc.id} id={inc.id} label={inc.title} width={1.65} height={2.2} position={[(i - (n - 1) / 2) * 1.76, 1.4, 0.05]} highlight>
           <Text font={FONT_BOLD} fontSize={0.22} color={C.accent} maxWidth={1.38} anchorX="left" anchorY="top" lineHeight={1.05}>
             {inc.metric}
           </Text>
@@ -142,12 +143,12 @@ function ProofWall({ data }: { data: VRData }) {
 function ProjectsWall({ projects }: { projects: VRProject[] }) {
   return (
     <Wall side="right">
-      <Heading y={4.55}>{"$ ls ~/shipped"}</Heading>
-      {projects.slice(0, 8).map((p, i) => {
+      <Heading y={5.1}>{"$ ls ~/shipped"}</Heading>
+      {projects.slice(0, 12).map((p, i) => {
         const col = i % 4;
         const row = Math.floor(i / 4);
         return (
-          <Tile key={p.id} id={`p-${p.id}`} width={2.4} height={1.3} position={[(col - 1.5) * 2.7, row === 0 ? 3.15 : 1.65, 0.05]}>
+          <Tile key={p.id} id={`p-${p.id}`} label={p.name} width={2.4} height={1.3} highlight={p.featured} position={[(col - 1.5) * 2.7, [4.0, 2.55, 1.1][row], 0.05]}>
             <mesh position={[0.05, -0.05, 0]}>
               <circleGeometry args={[0.045, 16]} />
               <meshBasicMaterial color={statusColor(p.status)} />
@@ -236,10 +237,22 @@ function CareerWall({ entries }: { entries: VRExperience[] }) {
       <Text font={FONT} fontSize={0.125} color={C.dim} position={[0, 1.3, 0.05]} anchorX="center" anchorY="middle">
         Open to full-time roles, contracts and hard production problems · remote or hybrid
       </Text>
-      <ActionButton label="✉  Email me" primary position={[-3.15, 0.65, 0.05]} onActivate={() => (window.location.href = `mailto:${CONTACT.email}`)} />
-      <ActionButton label="↓  Download CV" position={[-1.05, 0.65, 0.05]} onActivate={() => openUrl(CONTACT.cv)} />
-      <ActionButton label="in  LinkedIn" position={[1.05, 0.65, 0.05]} onActivate={() => openUrl(CONTACT.linkedin)} />
-      <ActionButton label="GitHub" position={[3.15, 0.65, 0.05]} onActivate={() => openUrl(CONTACT.github)} />
+      <ActionButton label="✉  Email me" primary position={[-3.15, 0.65, 0.05]} onActivate={() => {
+          trackEvent("cta_click", { cta: "hire_me", where: "3d" });
+          window.location.href = `mailto:${CONTACT.email}`;
+        }} />
+      <ActionButton label="↓  Download CV" position={[-1.05, 0.65, 0.05]} onActivate={() => {
+          trackEvent("cta_click", { cta: "cv", where: "3d" });
+          openUrl(CONTACT.cv);
+        }} />
+      <ActionButton label="in  LinkedIn" position={[1.05, 0.65, 0.05]} onActivate={() => {
+          trackEvent("cta_click", { cta: "linkedin", where: "3d" });
+          openUrl(CONTACT.linkedin);
+        }} />
+      <ActionButton label="GitHub" position={[3.15, 0.65, 0.05]} onActivate={() => {
+          trackEvent("cta_click", { cta: "github", where: "3d" });
+          openUrl(CONTACT.github);
+        }} />
     </Wall>
   );
 }
@@ -283,7 +296,10 @@ function DetailPanel({ items }: { items: Map<string, DetailItem> }) {
         </Text>
       </group>
       <ActionButton label="[ close ]" position={[1.55, -1.45, 0.04]} width={1.0} onActivate={() => select(null)} />
-      {item.url && <ActionButton label="open live ↗" primary position={[0.4, -1.45, 0.04]} width={1.3} onActivate={() => openUrl(item.url ?? "")} />}
+      {item.url && <ActionButton label="open live ↗" primary position={[0.4, -1.45, 0.04]} width={1.3} onActivate={() => {
+          trackEvent("live_site_click", { card: item.title, where: "3d" });
+          openUrl(item.url ?? "");
+        }} />}
     </group>
   );
 }

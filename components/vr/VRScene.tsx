@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState, type ElementRef } from "react";
 import Link from "next/link";
 import { Monitor } from "lucide-react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import type { PerspectiveCamera } from "three";
 import { OrbitControls } from "@react-three/drei";
 import { XR, XROrigin, createXRStore, useXR } from "@react-three/xr";
 import { World } from "./World";
 import { useVRStore } from "./store";
+import { trackEvent } from "@/lib/track";
 import type { VRData } from "./types";
 
 // Teleport pointer lets controller users aim at the floor and jump there.
@@ -59,6 +61,18 @@ function DesktopControls() {
   );
 }
 
+/** Portrait phones get a wider vertical FOV so more of the wall fits across the narrow screen. */
+function ResponsiveFov() {
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  useEffect(() => {
+    const cam = camera as PerspectiveCamera;
+    cam.fov = size.width / size.height < 1 ? 92 : 70;
+    cam.updateProjectionMatrix();
+  }, [camera, size]);
+  return null;
+}
+
 function Origin() {
   const origin = useVRStore((s) => s.origin);
   return <XROrigin position={origin} />;
@@ -86,6 +100,7 @@ export default function VRScene({ data }: { data: VRData }) {
     <div className="absolute inset-0 bg-bg">
       {webgl ? (
         <Canvas camera={{ position: [0, 1.6, 0.01], fov: 70 }} dpr={[1, 1.75]}>
+          <ResponsiveFov />
           <XR store={xrStore}>
             <Origin />
             <DesktopControls />
@@ -102,7 +117,10 @@ export default function VRScene({ data }: { data: VRData }) {
         {vrSupported && (
           <button
             type="button"
-            onClick={() => xrStore.enterVR()}
+            onClick={() => {
+              trackEvent("enter_vr");
+              xrStore.enterVR();
+            }}
             className="pointer-events-auto rounded-lg bg-accent px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-black transition-colors hover:bg-accent-hover"
           >
             Enter VR
@@ -110,6 +128,7 @@ export default function VRScene({ data }: { data: VRData }) {
         )}
         <Link
           href="/classic"
+          onClick={() => trackEvent("view_switch", { to: "classic" })}
           className="pointer-events-auto flex items-center gap-2 rounded-lg border border-border bg-surface/85 px-3.5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-text backdrop-blur-md transition-colors hover:border-accent hover:text-accent"
         >
           <Monitor className="h-4 w-4" />

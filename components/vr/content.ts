@@ -15,11 +15,11 @@ export const HERO = {
   name: "John Edeh",
   role: "Full-Stack & DevOps Engineer — Lagos, Nigeria",
   pitch:
-    "I fix production, then build the next thing. Root-caused a full-site 504 outage and fixed it live in 15 minutes. Cut editor publish latency from 40s+ to normal. Closed a production XSS. Ship SaaS products end to end on the side.",
+    "I fix production, then build the next thing. Root-caused a full-site 504 outage and fixed it live in 15 minutes. Cut editor publish latency from 40s+ to normal. Closed a production XSS. Co-built a live quiz platform that ran a national Bible-quiz final with 567 audience members.",
   stats: [
     { value: "23M+", label: "pageviews / month run" },
     { value: "15 min", label: "to fix a full-site 504" },
-    { value: "7", label: "SaaS products shipped" },
+    { value: "567", label: "audience at a live quiz final I co-built" },
   ],
 } as const;
 
