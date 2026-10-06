@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Terminal } from "lucide-react";
+import { Menu, X, Terminal, Box } from "lucide-react";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,12 +94,26 @@ export function Navbar() {
               </li>
             ))}
           </ul>
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-lg bg-accent px-3.5 py-2 text-xs font-mono font-bold uppercase tracking-wider text-black transition-colors hover:bg-accent-hover"
+          >
+            <Box className="h-4 w-4" />
+            Enter 3D
+          </Link>
           <div className="h-6 w-px bg-border" />
           <ThemeToggle />
         </div>
 
         {/* Mobile Toggle */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-3 md:hidden">
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-[11px] font-mono font-bold uppercase tracking-wider text-black"
+          >
+            <Box className="h-4 w-4" />
+            3D
+          </Link>
           <ThemeToggle />
           <button
             onClick={() => setIsOpen(!isOpen)}

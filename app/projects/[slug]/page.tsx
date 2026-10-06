@@ -68,7 +68,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           {/* Header */}
           <div className="mb-12">
             <Link
-              href="/#projects"
+              href="/classic#projects"
               className="inline-flex items-center gap-2 text-sm font-syne font-bold uppercase tracking-widest text-muted hover:text-accent transition-colors mb-8"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Projects

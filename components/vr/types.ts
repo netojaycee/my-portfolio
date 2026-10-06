@@ -29,8 +29,29 @@ export type VRExperience = {
   bullet: string;
 };
 
+export type VRIncident = {
+  id: string;
+  metric: string;
+  metricLabel: string;
+  title: string;
+  summary: string;
+  detail: string;
+};
+
 export type VRData = {
+  incidents: VRIncident[];
   projects: VRProject[];
   skills: VRSkillCategory[];
   experience: VRExperience[];
+};
+
+/** Anything that can open in the big in-world detail panel. */
+export type DetailItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  body: string;
+  bullets: string[];
+  footer: string;
+  url: string | null;
 };
