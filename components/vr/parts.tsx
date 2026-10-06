@@ -26,9 +26,8 @@ export const C = {
   blue: "#60a5fa",
 };
 
-export const ROOM = 12;
-export const HALF = ROOM / 2;
-export const HEIGHT = 5.6;
+import { HALF } from "./layout";
+export { ROOM, HALF, HEIGHT } from "./layout";
 
 export function clip(text: string, max: number) {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
@@ -57,6 +56,7 @@ export function Wall({ side, children }: { side: keyof typeof WALLS; children: R
 /** Pose that puts the detail panel ~3m in front of wherever the viewer is looking. */
 export function usePanelPose() {
   const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
   return useCallback((): PanelPose => {
     const dir = new Vector3();
     camera.getWorldDirection(dir);
@@ -66,10 +66,10 @@ export function usePanelPose() {
     const pos = new Vector3();
     camera.getWorldPosition(pos);
     return {
-      position: [pos.x + dir.x * 3.1, Math.max(1.5, pos.y) + 0.55, pos.z + dir.z * 3.1],
+      position: [pos.x + dir.x * 3.1, Math.max(1.5, pos.y) + (size.width / size.height < 1 ? 0.9 : 0.55), pos.z + dir.z * 3.1],
       rotationY: Math.atan2(-dir.x, -dir.z),
     };
-  }, [camera]);
+  }, [camera, size]);
 }
 
 export function useHover() {
@@ -114,14 +114,14 @@ export function Tile({
   const poseFor = usePanelPose();
   const { hovered, handlers } = useHover();
   const group = useRef<Group>(null);
-  const phase = useRef(Math.random() * Math.PI * 2);
+  const [phase] = useState(() => Math.random() * Math.PI * 2);
   const active = hovered || selected;
 
   useFrame((state, delta) => {
     const g = group.current;
     if (!g) return;
     g.scale.setScalar(MathUtils.damp(g.scale.x, active ? 1.06 : 1, 8, delta));
-    g.position.y = Math.sin(state.clock.elapsedTime * 0.8 + phase.current) * 0.02;
+    g.position.y = Math.sin(state.clock.elapsedTime * 0.8 + phase) * 0.02;
   });
 
   return (
@@ -134,7 +134,7 @@ export function Tile({
             if (selected) select(null);
             else {
               select(id, poseFor());
-              trackEvent("card_open", { card: label ?? id, kind: id.startsWith("inc-") ? "incident" : "project", where: "3d" });
+              trackEvent("card_open", { card: label ?? id, kind: id.startsWith("inc-") ? "incident" : id.startsWith("p-") ? "project" : id.startsWith("s-") ? "skills" : "career", where: "3d" });
             }
           }}
         >

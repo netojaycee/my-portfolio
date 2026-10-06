@@ -1,8 +1,11 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import { Text, Sparkles } from "@react-three/drei";
-import { TeleportTarget } from "@react-three/xr";
+import { TeleportTarget, useXR } from "@react-three/xr";
+import { useThree } from "@react-three/fiber";
+import { MathUtils } from "three";
+import type { PerspectiveCamera } from "three";
 import { useVRStore } from "./store";
 import { NOC } from "./NOC";
 import { Racks } from "./Racks";
@@ -19,6 +22,9 @@ import {
   clip,
 } from "./parts";
 import { CONTACT } from "./content";
+import { buildItems } from "./details";
+import { useCompact } from "./useCompact";
+import { NOC_POS, careerPos, incidentPos, projectPos, skillPos } from "./layout";
 import { trackEvent } from "@/lib/track";
 import type { DetailItem, VRData, VRExperience, VRProject, VRSkillCategory } from "./types";
 
@@ -86,22 +92,6 @@ function Heading({ children, y, size = 0.3 }: { children: string; y: number; siz
   );
 }
 
-function Panel({ position, width, height, highlight = false, children }: { position: [number, number, number]; width: number; height: number; highlight?: boolean; children: ReactNode }) {
-  return (
-    <group position={position}>
-      <mesh>
-        <boxGeometry args={[width, height, 0.05]} />
-        <meshStandardMaterial color={C.surface2} roughness={0.7} emissive={C.accent} emissiveIntensity={highlight ? 0.07 : 0} />
-      </mesh>
-      <mesh position={[-width / 2 + 0.02, 0, 0.03]}>
-        <boxGeometry args={[0.04, height, 0.02]} />
-        <meshBasicMaterial color={highlight ? C.accent : C.border} />
-      </mesh>
-      <group position={[-width / 2 + 0.18, height / 2 - 0.16, 0.04]}>{children}</group>
-    </group>
-  );
-}
-
 /* ───────────── FRONT: Punch proof ───────────── */
 
 function ProofWall({ data }: { data: VRData }) {
@@ -114,9 +104,9 @@ function ProofWall({ data }: { data: VRData }) {
       <Text font={FONT} fontSize={0.15} color={C.accent} position={[0, 4.86, 0.05]} anchorX="center" anchorY="middle">
         {"The Punch Nigeria Ltd · running production infra for 23M+ pageviews/month"}
       </Text>
-      <NOC position={[0, 3.65, 0.05]} />
+      <NOC position={[...NOC_POS, 0.05]} />
       {data.incidents.map((inc, i) => (
-        <Tile key={inc.id} id={inc.id} label={inc.title} width={1.65} height={2.2} position={[(i - (n - 1) / 2) * 1.76, 1.4, 0.05]} highlight>
+        <Tile key={inc.id} id={inc.id} label={inc.title} width={1.65} height={2.2} position={[...incidentPos(i, n), 0.05]} highlight>
           <Text font={FONT_BOLD} fontSize={0.22} color={C.accent} maxWidth={1.38} anchorX="left" anchorY="top" lineHeight={1.05}>
             {inc.metric}
           </Text>
@@ -145,10 +135,8 @@ function ProjectsWall({ projects }: { projects: VRProject[] }) {
     <Wall side="right">
       <Heading y={5.1}>{"$ ls ~/shipped"}</Heading>
       {projects.slice(0, 12).map((p, i) => {
-        const col = i % 4;
-        const row = Math.floor(i / 4);
         return (
-          <Tile key={p.id} id={`p-${p.id}`} label={p.name} width={2.4} height={1.3} highlight={p.featured} position={[(col - 1.5) * 2.7, [4.0, 2.55, 1.1][row], 0.05]}>
+          <Tile key={p.id} id={`p-${p.id}`} label={p.name} width={2.4} height={1.3} highlight={p.featured} position={[...projectPos(i), 0.05]}>
             <mesh position={[0.05, -0.05, 0]}>
               <circleGeometry args={[0.045, 16]} />
               <meshBasicMaterial color={statusColor(p.status)} />
@@ -182,7 +170,7 @@ function SkillsWall({ categories }: { categories: VRSkillCategory[] }) {
         const expert = cat.skills.filter((s) => s.level === "EXPERT");
         const rest = cat.skills.filter((s) => s.level !== "EXPERT");
         return (
-          <Panel key={cat.id} position={[((i % 3) - 1) * 3.6, i < 3 ? 3.1 : 1.3, 0.05]} width={3.4} height={1.55}>
+          <Tile key={cat.id} id={`s-${cat.id}`} label={cat.title} position={[...skillPos(i), 0.05]} width={3.4} height={1.55}>
             <Text font={FONT_BOLD} fontSize={0.14} color={C.accent} anchorX="left" anchorY="top">
               {cat.title}
             </Text>
@@ -192,7 +180,7 @@ function SkillsWall({ categories }: { categories: VRSkillCategory[] }) {
             <Text font={FONT} fontSize={0.08} color={C.muted} position={[0, -0.95, 0]} maxWidth={3.0} anchorX="left" anchorY="top" lineHeight={1.5}>
               {rest.slice(0, 5).map((s) => s.name).join(" · ")}
             </Text>
-          </Panel>
+          </Tile>
         );
       })}
     </Wall>
@@ -211,7 +199,7 @@ function CareerWall({ entries }: { entries: VRExperience[] }) {
     <Wall side="back">
       <Heading y={4.85}>{"$ git log --career"}</Heading>
       {entries.slice(0, 4).map((e, i) => (
-        <Panel key={e.id} position={[(i - (n - 1) / 2) * 2.9, 3.4, 0.05]} width={2.7} height={2.0} highlight={e.current}>
+        <Tile key={e.id} id={`e-${e.id}`} label={e.role} position={[...careerPos(i, n), 0.05]} width={2.7} height={2.0} highlight={e.current}>
           <mesh position={[0.05, -0.05, 0]}>
             <circleGeometry args={[0.05, 16]} />
             <meshBasicMaterial color={e.current ? C.green : C.muted} />
@@ -228,7 +216,7 @@ function CareerWall({ entries }: { entries: VRExperience[] }) {
           <Text font={FONT} fontSize={0.078} color={C.dim} position={[0, -0.75, 0]} maxWidth={2.35} anchorX="left" anchorY="top" lineHeight={1.4}>
             {clip(e.bullet, 150)}
           </Text>
-        </Panel>
+        </Tile>
       ))}
 
       <Text font={FONT_BOLD} fontSize={0.4} color={C.text} position={[0, 1.75, 0.05]} anchorX="center" anchorY="middle">
@@ -264,10 +252,19 @@ function DetailPanel({ items }: { items: Map<string, DetailItem> }) {
   const pose = useVRStore((s) => s.panelPose);
   const select = useVRStore((s) => s.select);
   const item = selectedId ? items.get(selectedId) : undefined;
-  if (!item) return null;
+  const camera = useThree((s) => s.camera) as PerspectiveCamera;
+  const size = useThree((s) => s.size);
+  const inVR = useXR((s) => Boolean(s.session));
+  const compact = useCompact();
+  if (!item || (compact && !inVR)) return null;
+
+  // Fit the panel to the screen: narrow (portrait) viewports see far less than 4.3m at 3.1m.
+  const hfov = 2 * Math.atan(Math.tan(MathUtils.degToRad(camera.fov) / 2) * (size.width / size.height));
+  const fit = (0.92 * 2 * 3.1 * Math.tan(hfov / 2)) / 4.3;
+  const panelScale = inVR ? 0.8 : Math.min(0.8, fit);
 
   return (
-    <group position={pose.position} rotation-y={pose.rotationY} scale={0.8}>
+    <group position={pose.position} rotation-y={pose.rotationY} scale={panelScale}>
       <mesh>
         <boxGeometry args={[4.3, 3.3, 0.05]} />
         <meshStandardMaterial color={C.surface} emissive={C.accent} emissiveIntensity={0.08} />
@@ -284,15 +281,15 @@ function DetailPanel({ items }: { items: Map<string, DetailItem> }) {
           {item.subtitle}
         </Text>
         <Text font={FONT} fontSize={0.1} color={C.dim} position={[0, -0.75, 0]} maxWidth={3.9} anchorX="left" anchorY="top" lineHeight={1.45}>
-          {item.body}
+          {clip(item.body, 520)}
         </Text>
         {item.bullets.length > 0 && (
           <Text font={FONT} fontSize={0.09} color={C.text} position={[0, -1.95, 0]} maxWidth={3.9} anchorX="left" anchorY="top" lineHeight={1.45}>
-            {item.bullets.map((b) => `▸ ${clip(b, 120)}`).join("\n")}
+            {item.bullets.slice(0, 2).map((b) => `▸ ${clip(b, 120)}`).join("\n")}
           </Text>
         )}
         <Text font={FONT} fontSize={0.082} color={C.muted} position={[0, -2.55, 0]} maxWidth={3.9} anchorX="left" anchorY="top">
-          {item.footer}
+          {clip(item.footer, 110)}
         </Text>
       </group>
       <ActionButton label="[ close ]" position={[1.55, -1.45, 0.04]} width={1.0} onActivate={() => select(null)} />
@@ -302,33 +299,6 @@ function DetailPanel({ items }: { items: Map<string, DetailItem> }) {
         }} />}
     </group>
   );
-}
-
-function buildItems(data: VRData): Map<string, DetailItem> {
-  const m = new Map<string, DetailItem>();
-  for (const inc of data.incidents) {
-    m.set(inc.id, {
-      id: inc.id,
-      title: inc.title,
-      subtitle: `${inc.metric} — ${inc.metricLabel}`,
-      body: clip(inc.detail, 520),
-      bullets: [],
-      footer: "The Punch Nigeria Ltd · production infrastructure",
-      url: null,
-    });
-  }
-  for (const p of data.projects) {
-    m.set(`p-${p.id}`, {
-      id: `p-${p.id}`,
-      title: p.name,
-      subtitle: p.tagline,
-      body: clip(p.description, 300),
-      bullets: p.highlights.slice(0, 2),
-      footer: p.stack.slice(0, 8).join(" · "),
-      url: p.liveUrl,
-    });
-  }
-  return m;
 }
 
 export function World({ data }: { data: VRData }) {

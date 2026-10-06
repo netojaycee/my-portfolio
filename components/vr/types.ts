@@ -28,6 +28,7 @@ export type VRExperience = {
   period: string;
   current: boolean;
   bullet: string;
+  bullets: string[];
 };
 
 export type VRIncident = {

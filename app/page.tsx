@@ -75,6 +75,7 @@ async function getVRData(): Promise<VRData> {
       period: e.period,
       current: e.current,
       bullet: e.bullets[0]?.text ?? "",
+      bullets: e.bullets.map((b) => b.text),
     })),
   };
 }

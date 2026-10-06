@@ -43,8 +43,8 @@ export const INCIDENT_META: IncidentMeta[] = [
 
 /** Camera azimuth (radians) that faces each wall from the room centre. */
 export const WALLS = [
-  { key: "proof", label: "Punch proof", angle: 0 },
-  { key: "projects", label: "Projects", angle: -Math.PI / 2 },
-  { key: "skills", label: "Skills", angle: Math.PI / 2 },
-  { key: "career", label: "Career + contact", angle: Math.PI },
+  { key: "proof", label: "Punch proof", short: "Punch", angle: 0 },
+  { key: "projects", label: "Projects", short: "Projects", angle: -Math.PI / 2 },
+  { key: "skills", label: "Skills", short: "Skills", angle: Math.PI / 2 },
+  { key: "career", label: "Career + contact", short: "Career", angle: Math.PI },
 ] as const;

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { WallNav } from "./WallNav";
+import { DetailSheet } from "./DetailSheet";
 import type { VRData } from "./types";
 
 // WebGL/WebXR only exist in the browser, so the scene is client-only.
@@ -23,8 +24,9 @@ export function VRExperience({ data, overlay }: { data: VRData; overlay: ReactNo
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-bg">
       <VRScene data={data} />
+      <DetailSheet data={data} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-2.5 p-3 sm:p-5">
-        <WallNav />
+        <WallNav data={data} />
         {overlay}
       </div>
     </div>
